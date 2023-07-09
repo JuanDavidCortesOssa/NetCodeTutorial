@@ -24,13 +24,17 @@ public class NetworkBoxUI : NetworkBehaviour
 
     private void UpdateBoxTextNetworkVariable()
     {
-        if (IsOwner)
+        var playerTurn = GameManager.GetPlayerTurn();
+
+        if (IsServer && playerTurn.Equals(GameManager.PlayerTurn.Server))
         {
             ChangeBoxTextNetworkVariable("X");
+            GameManager.ChangePlayerTurnNetworkVariable(GameManager.PlayerTurn.Client);
         }
-        else
+        else if (IsClient && !IsServer && playerTurn.Equals(GameManager.PlayerTurn.Client))
         {
             ChangeBoxTextServerRpc("O");
+            GameManager.ChangePlayerTurnNetworkVariable(GameManager.PlayerTurn.Server);
         }
     }
 
