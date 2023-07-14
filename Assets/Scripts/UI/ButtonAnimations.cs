@@ -7,21 +7,30 @@ using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class UIAnimations : MonoBehaviour
+public class ButtonAnimations : MonoBehaviour
 {
-    [Header("DoTweenAnimations")] 
-    [SerializeField] private Ease hoverEase;
+    [Header("DoTweenAnimations")] [SerializeField]
+    private Ease hoverEase;
+
     [SerializeField] private AnimationCurve buttonClickAnimationCurve;
-    
-    
+    [SerializeField] private float hoverSize;
+
+    [FormerlySerializedAs("hoverTime")] [SerializeField]
+    private float hoverDuration;
+
+    [SerializeField] private float clickSize;
+
+    [FormerlySerializedAs("clickTime")] [SerializeField]
+    private float onClickDuration;
+
     //General
     private RectTransform _rectTransform;
-    private Vector3 InitialScale;
+    private Vector3 _initialScale;
 
     //Twiners
     private Tween _hoverTween;
     private Tween _clickTween;
-    
+
     //Triggers
     private Button _button;
     private EventTrigger _eventTrigger;
@@ -29,6 +38,8 @@ public class UIAnimations : MonoBehaviour
     private void Awake()
     {
         _rectTransform = GetComponent<RectTransform>();
+        _initialScale = _rectTransform.localScale;
+
         _button = GetComponent<Button>();
         _eventTrigger = GetComponent<EventTrigger>();
 
@@ -57,17 +68,18 @@ public class UIAnimations : MonoBehaviour
 
     public void OnPointerEnterAnimation()
     {
-        _hoverTween = _rectTransform.DOScale(new Vector3(1.2f, 1.2f, 1.2f), 0.25f).SetEase(hoverEase);
+        _hoverTween = _rectTransform.DOScale(_initialScale * hoverSize, hoverDuration).SetEase(hoverEase);
     }
 
     public void OnPointerExitAnimation()
     {
-        _hoverTween = _rectTransform.DOScale(new Vector3(1f, 1f, 1f), 0.25f).SetEase(hoverEase);
+        _hoverTween = _rectTransform.DOScale(_initialScale, hoverDuration).SetEase(hoverEase);
     }
 
     public void OnPointerClick()
     {
         if (_clickTween.IsActive() && _clickTween.IsPlaying()) return;
-        _clickTween = _rectTransform.DOScale(new Vector3(1f, 1f, 1f), 0.25f).SetEase(buttonClickAnimationCurve);
+        _clickTween = _rectTransform.DOScale(_initialScale * clickSize, onClickDuration)
+            .SetEase(buttonClickAnimationCurve);
     }
 }

@@ -28,7 +28,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4381395597556939760}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -123,19 +123,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4381395597556939767}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4381395597556939770}
-        m_TargetAssemblyTypeName: UIAnimations, Assembly-CSharp
-        m_MethodName: OnPointerClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &4381395597556939765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,35 +140,11 @@ MonoBehaviour:
   - eventID: 0
     callback:
       m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4381395597556939770}
-          m_TargetAssemblyTypeName: UIAnimations, Assembly-CSharp
-          m_MethodName: OnPointerEnterAnimation
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+        m_Calls: []
   - eventID: 1
     callback:
       m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4381395597556939770}
-          m_TargetAssemblyTypeName: UIAnimations, Assembly-CSharp
-          m_MethodName: OnPointerExitAnimation
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+        m_Calls: []
 --- !u!114 &4381395597556939770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,8 +157,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebea115302e0dd64c9b8dbff0299219f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverEase: 0
-  clickEase: 0
+  hoverEase: 27
+  buttonClickAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 3.5175128
+      outSlope: 3.5175128
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.03837404
+    - serializedVersion: 3
+      time: 1.003434
+      value: -0.0010069308
+      inSlope: -5.3982053
+      outSlope: -5.3982053
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.038330536
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  hoverSize: 1.2
+  hoverDuration: 0.25
+  clickSize: 1
+  onClickDuration: 0.2
 --- !u!1 &4381395597781157406
 GameObject:
   m_ObjectHideFlags: 0
