@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class ButtonAnimations : MonoBehaviour
+public class ButtonAnimations : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("DoTweenAnimations")] [SerializeField]
     private Ease hoverEase;
@@ -31,52 +31,23 @@ public class ButtonAnimations : MonoBehaviour
     private Tween _hoverTween;
     private Tween _clickTween;
 
-    //Triggers
-    private Button _button;
-    private EventTrigger _eventTrigger;
-
     private void Awake()
     {
         _rectTransform = GetComponent<RectTransform>();
         _initialScale = _rectTransform.localScale;
-
-        _button = GetComponent<Button>();
-        _eventTrigger = GetComponent<EventTrigger>();
-
-        AddListeners();
     }
 
-    private void AddListeners()
-    {
-        _button.onClick.AddListener(OnPointerClick);
-        AddEventTriggerListener(_eventTrigger, EventTriggerType.PointerEnter, data => OnPointerEnterAnimation());
-        AddEventTriggerListener(_eventTrigger, EventTriggerType.PointerExit, data => OnPointerExitAnimation());
-    }
-
-    private static void AddEventTriggerListener(EventTrigger trigger,
-        EventTriggerType eventType,
-        System.Action<BaseEventData> callback)
-    {
-        var entry = new EventTrigger.Entry
-        {
-            eventID = eventType,
-            callback = new EventTrigger.TriggerEvent()
-        };
-        entry.callback.AddListener(new UnityEngine.Events.UnityAction<BaseEventData>(callback));
-        trigger.triggers.Add(entry);
-    }
-
-    public void OnPointerEnterAnimation()
+    public void OnPointerEnter(PointerEventData eventData)
     {
         _hoverTween = _rectTransform.DOScale(_initialScale * hoverSize, hoverDuration).SetEase(hoverEase);
     }
 
-    public void OnPointerExitAnimation()
+    public void OnPointerExit(PointerEventData eventData)
     {
         _hoverTween = _rectTransform.DOScale(_initialScale, hoverDuration).SetEase(hoverEase);
     }
 
-    public void OnPointerClick()
+    public void OnPointerClick(PointerEventData eventData)
     {
         if (_clickTween.IsActive() && _clickTween.IsPlaying()) return;
         _clickTween = _rectTransform.DOScale(_initialScale * clickSize, onClickDuration)
