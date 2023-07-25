@@ -1,59 +1,73 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.Netcode;
 using UnityEngine;
 
-public class GameManager : NetworkBehaviour
+public class GameManager : Singleton<GameManager>
 {
-    public enum PlayerTurn
+    public event Action<TurnManager.PlayerTurn> OnPlayerWin;
+    public event Action OnGameDraw;
+
+    [SerializeField] private TextMeshProUGUI[] boardState;
+
+    // Winning combinations (indexes of the cells)
+    private int[][] winCombinations = new int[][]
     {
-        Server,
-        Client
-    }
+        new int[] { 0, 1, 2 }, // Row 1
+        new int[] { 3, 4, 5 }, // Row 2
+        new int[] { 6, 7, 8 }, // Row 3
+        new int[] { 0, 3, 6 }, // Column 1
+        new int[] { 1, 4, 7 }, // Column 2
+        new int[] { 2, 5, 8 }, // Column 3
+        new int[] { 0, 4, 8 }, // Diagonal 1
+        new int[] { 2, 4, 6 } // Diagonal 2
+    };
 
-    [SerializeField] private TextMeshProUGUI playerTurnText;
-    private static GameManager _instance;
+    private bool gameEnded = false;
 
-    public NetworkVariable<PlayerTurn> playerTurnNetworkVariable = new NetworkVariable<PlayerTurn>(PlayerTurn.Server,
-        NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
-    public override void OnNetworkSpawn()
+    public void CheckGameEnd()
     {
-        _instance = this;
-        ChangePlayerTurnText(PlayerTurn.Server);
-        playerTurnNetworkVariable.OnValueChanged += (value, newValue) =>
+        Debug.Log("Check");
+        // Check for a win
+        for (int i = 0; i < winCombinations.Length; i++)
         {
-            ChangePlayerTurnText(playerTurnNetworkVariable.Value);
-        };
-    }
+            int a = winCombinations[i][0];
+            int b = winCombinations[i][1];
+            int c = winCombinations[i][2];
 
-    [ServerRpc(RequireOwnership = false)]
-    private void ChangePlayerTurnServerRpc(PlayerTurn playerTurn)
-    {
-        playerTurnNetworkVariable.Value = playerTurn;
-    }
+            string first = boardState[a].text;
+            string second = boardState[b].text;
+            string third = boardState[c].text;
 
-    private void ChangePlayerTurnText(PlayerTurn playerTurn)
-    {
-        if ((IsServer && playerTurn == PlayerTurn.Server) || (!IsServer && IsClient && playerTurn == PlayerTurn.Client))
-        {
-            playerTurnText.text = "Your turn";
+            if (first != "" && first == second && second == third)
+            {
+                gameEnded = true;
+                OnPlayerWin?.Invoke(first == "X" ? TurnManager.PlayerTurn.Server : TurnManager.PlayerTurn.Client);
+                Debug.Log("Player " + boardState[a].text + " wins!");
+                return;
+            }
         }
-        else
+
+        // Check for a draw
+        if (!gameEnded)
         {
-            playerTurnText.text = "Opponent turn";
+            bool isDraw = true;
+            foreach (TextMeshProUGUI cellState in boardState)
+            {
+                if (cellState.text == "")
+                {
+                    isDraw = false;
+                    break;
+                }
+            }
+
+            if (isDraw)
+            {
+                gameEnded = true;
+                Debug.Log("It's a draw!");
+                OnGameDraw?.Invoke();
+            }
         }
-    }
-
-    public static void ChangePlayerTurnNetworkVariable(PlayerTurn playerTurn)
-    {
-        _instance.ChangePlayerTurnServerRpc(playerTurn);
-        _instance.ChangePlayerTurnText(playerTurn);
-    }
-
-    public static PlayerTurn GetPlayerTurn()
-    {
-        return _instance.playerTurnNetworkVariable.Value;
     }
 }

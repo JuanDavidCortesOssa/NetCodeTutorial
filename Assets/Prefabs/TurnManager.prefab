@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8622485231908187374}
   - component: {fileID: 8622485231908187368}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: TurnManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,3 +64,4 @@ MonoBehaviour:
   playerTurnText: {fileID: 0}
   playerTurnNetworkVariable:
     m_InternalValue: 0
+  boardState: []

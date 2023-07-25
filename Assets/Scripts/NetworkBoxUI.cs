@@ -18,23 +18,27 @@ public class NetworkBoxUI : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         boxButton.onClick.AddListener(UpdateBoxTextNetworkVariable);
-        _boxTextNetworkVariable.OnValueChanged += (value, newValue) => { boxText.text = newValue.Value; };
+        _boxTextNetworkVariable.OnValueChanged += (value, newValue) =>
+        {
+            boxText.text = newValue.Value;
+            GameManager.Instance.CheckGameEnd();
+        };
     }
 
 
     private void UpdateBoxTextNetworkVariable()
     {
-        var playerTurn = GameManager.GetPlayerTurn();
+        var playerTurn = TurnManager.GetPlayerTurn();
 
-        if (IsServer && playerTurn.Equals(GameManager.PlayerTurn.Server))
+        if (IsServer && playerTurn.Equals(TurnManager.PlayerTurn.Server))
         {
             ChangeBoxTextNetworkVariable("X");
-            GameManager.ChangePlayerTurnNetworkVariable(GameManager.PlayerTurn.Client);
+            TurnManager.ChangePlayerTurnNetworkVariable(TurnManager.PlayerTurn.Client);
         }
-        else if (IsClient && !IsServer && playerTurn.Equals(GameManager.PlayerTurn.Client))
+        else if (IsClient && !IsServer && playerTurn.Equals(TurnManager.PlayerTurn.Client))
         {
             ChangeBoxTextServerRpc("O");
-            GameManager.ChangePlayerTurnNetworkVariable(GameManager.PlayerTurn.Server);
+            TurnManager.ChangePlayerTurnNetworkVariable(TurnManager.PlayerTurn.Server);
         }
     }
 
