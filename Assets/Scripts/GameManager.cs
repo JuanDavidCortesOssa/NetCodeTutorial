@@ -9,7 +9,9 @@ public class GameManager : Singleton<GameManager>
     public event Action<TurnManager.PlayerTurn> OnPlayerWin;
     public event Action OnGameDraw;
 
-    [SerializeField] private TextMeshProUGUI[] boardState;
+    public event Action OnGameRestart;
+
+    public TextMeshProUGUI[] boardState;
 
     // Winning combinations (indexes of the cells)
     private int[][] winCombinations = new int[][]
@@ -69,5 +71,10 @@ public class GameManager : Singleton<GameManager>
                 OnGameDraw?.Invoke();
             }
         }
+    }
+
+    public void RestartGame()
+    {
+        OnGameRestart?.Invoke();
     }
 }

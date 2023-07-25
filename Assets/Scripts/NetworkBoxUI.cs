@@ -17,6 +17,7 @@ public class NetworkBoxUI : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        GameManager.Instance.OnGameRestart += ResetText;
         boxButton.onClick.AddListener(UpdateBoxTextNetworkVariable);
         _boxTextNetworkVariable.OnValueChanged += (value, newValue) =>
         {
@@ -24,7 +25,6 @@ public class NetworkBoxUI : NetworkBehaviour
             GameManager.Instance.CheckGameEnd();
         };
     }
-
 
     private void UpdateBoxTextNetworkVariable()
     {
@@ -51,5 +51,10 @@ public class NetworkBoxUI : NetworkBehaviour
     private void ChangeBoxTextServerRpc(string text)
     {
         ChangeBoxTextNetworkVariable(text);
+    }
+
+    private void ResetText()
+    {
+        boxText.text = "";
     }
 }

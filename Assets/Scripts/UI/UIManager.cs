@@ -34,6 +34,8 @@ public class UIManager : MonoBehaviour
 
         GameManager.Instance.OnPlayerWin += (TurnManager.PlayerTurn playerTurn) => { ShowUIPanel(winPanelTransform); };
 
+        GameManager.Instance.OnGameRestart += () => { ShowUIPanel(boardTransform); };
+
         foreach (var button in buttons)
         {
             button.onClick.AddListener((() => { ShowUIPanel(boardTransform); }));
