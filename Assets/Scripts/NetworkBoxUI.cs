@@ -10,6 +10,7 @@ public class NetworkBoxUI : NetworkBehaviour
 {
     [SerializeField] private Button boxButton;
     [SerializeField] private TextMeshProUGUI boxText;
+    private bool isBeingCheck = false;
 
     private NetworkVariable<FixedString32Bytes> _boxTextNetworkVariable =
         new NetworkVariable<FixedString32Bytes>("", NetworkVariableReadPermission.Everyone,
@@ -22,25 +23,40 @@ public class NetworkBoxUI : NetworkBehaviour
         _boxTextNetworkVariable.OnValueChanged += (value, newValue) =>
         {
             boxText.text = newValue.Value;
+            UpdatePlayerTurnState();
             GameManager.Instance.CheckGameEnd();
+            isBeingCheck = false;
         };
     }
 
     private void UpdateBoxTextNetworkVariable()
     {
         if (boxText.text != "") return;
+        if (isBeingCheck) return;
 
+        isBeingCheck = true;
         var playerTurn = TurnManager.GetPlayerTurn();
 
         if (IsServer && playerTurn.Equals(TurnManager.PlayerTurn.Server))
         {
             ChangeBoxTextNetworkVariable("X");
-            TurnManager.ChangePlayerTurnNetworkVariable(TurnManager.PlayerTurn.Client);
         }
         else if (IsClient && !IsServer && playerTurn.Equals(TurnManager.PlayerTurn.Client))
         {
             ChangeBoxTextServerRpc("O");
-            TurnManager.ChangePlayerTurnNetworkVariable(TurnManager.PlayerTurn.Server);
+        }
+    }
+
+    private void UpdatePlayerTurnState()
+    {
+        switch (boxText.text)
+        {
+            case "O":
+                TurnManager.ChangePlayerTurnNetworkVariable(TurnManager.PlayerTurn.Server);
+                break;
+            case "X":
+                TurnManager.ChangePlayerTurnNetworkVariable(TurnManager.PlayerTurn.Client);
+                break;
         }
     }
 
