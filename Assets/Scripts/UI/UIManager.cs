@@ -33,10 +33,6 @@ public class UIManager : Singleton<UIManager>
         GameManager.Instance.OnGameDraw += () => { ShowUIPanel(winPanelTransform); };
 
         GameManager.Instance.OnPlayerWin += (TurnManager.PlayerTurn playerTurn) => { ShowUIPanel(winPanelTransform); };
-
-        NetworkManager.Singleton.OnClientConnectedCallback += CheckForSessionStarted;
-
-        NetworkManager.Singleton.OnClientDisconnectCallback += (ulong u) => { OnPlayerDisconnected(); };
     }
 
     private void ShowUIPanel(UIPanel newPanel)
@@ -59,20 +55,5 @@ public class UIManager : Singleton<UIManager>
     public void ShowGamePanel()
     {
         ShowUIPanel(boardTransform);
-    }
-
-    public void OnPlayerDisconnected()
-    {
-        ShowNetworkPanel();
-        GameManager.Instance.RestartGame();
-    }
-
-    private void CheckForSessionStarted(ulong numberUlong)
-    {
-        Debug.Log("ClientConnected");
-        if (NetworkManager.Singleton.ConnectedClients.Count >= 2)
-        {
-            ShowGamePanel();
-        }
     }
 }

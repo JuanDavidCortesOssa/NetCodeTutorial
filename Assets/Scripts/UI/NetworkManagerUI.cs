@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Unity.Netcode;
 using UnityEngine.Serialization;
 
-public class NetworkManagerUI : MonoBehaviour
+public class NetworkManagerUI : NetworkBehaviour
 {
     [SerializeField] private Button clientBtn;
     [SerializeField] private Button hostBtn;
@@ -22,6 +22,13 @@ public class NetworkManagerUI : MonoBehaviour
         hostBtn.onClick.AddListener((StartHost));
         joinAsClientButton.onClick.AddListener(JoinAsClient);
         backButton.onClick.AddListener((GoBack));
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        NetworkManager.Singleton.OnClientConnectedCallback += CheckForSessionStarted;
+        NetworkManager.Singleton.OnClientDisconnectCallback += (ulong u) => { OnPlayerDisconnected(); };
     }
 
     private void JoinAsClient()
@@ -72,5 +79,34 @@ public class NetworkManagerUI : MonoBehaviour
         }
 
         UIManager.Instance.ShowStartPanel();
+    }
+
+    private void CheckForSessionStarted(ulong numberUlong)
+    {
+        if (!IsServer) return;
+        if (NetworkManager.Singleton.ConnectedClients.Count < 2) return;
+
+        UIManager.Instance.ShowGamePanel();
+        ShowGamePanelClientRpc();
+    }
+
+    [ClientRpc]
+    private void ShowGamePanelClientRpc()
+    {
+        UIManager.Instance.ShowGamePanel();
+    }
+
+    private void OnPlayerDisconnected()
+    {
+        UIManager.Instance.ShowNetworkPanel();
+        GameManager.Instance.RestartGame();
+        OnPlayerDisconnectedClientRpc();
+    }
+
+    [ClientRpc]
+    private void OnPlayerDisconnectedClientRpc()
+    {
+        UIManager.Instance.ShowNetworkPanel();
+        GameManager.Instance.RestartGame();
     }
 }

@@ -28,6 +28,8 @@ public class NetworkBoxUI : NetworkBehaviour
 
     private void UpdateBoxTextNetworkVariable()
     {
+        if (boxText.text != "") return;
+
         var playerTurn = TurnManager.GetPlayerTurn();
 
         if (IsServer && playerTurn.Equals(TurnManager.PlayerTurn.Server))
