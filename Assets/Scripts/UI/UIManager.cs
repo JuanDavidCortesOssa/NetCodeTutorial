@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Unity.Netcode;
 using UnityEngine.Serialization;
 
 [Serializable]
@@ -13,19 +14,18 @@ public struct UIPanel
     public Vector2 OutPosition;
 }
 
-public class UIManager : MonoBehaviour
+public class UIManager : Singleton<UIManager>
 {
-    [SerializeField] private UIPanel networkManagerTransform, boardTransform, winPanelTransform;
+    [SerializeField] private UIPanel startPanel, boardTransform, winPanelTransform, networkPanel;
     [SerializeField] private float transitionTime;
-    [SerializeField] private List<Button> buttons;
 
     private UIPanel currentPanel;
 
     private void Start()
     {
         AddListeners();
-        currentPanel = networkManagerTransform;
-        networkManagerTransform.Transform.DOAnchorPos(Vector2.zero, transitionTime);
+        currentPanel = startPanel;
+        startPanel.Transform.DOAnchorPos(Vector2.zero, transitionTime);
     }
 
     private void AddListeners()
@@ -34,12 +34,9 @@ public class UIManager : MonoBehaviour
 
         GameManager.Instance.OnPlayerWin += (TurnManager.PlayerTurn playerTurn) => { ShowUIPanel(winPanelTransform); };
 
-        GameManager.Instance.OnGameRestart += () => { ShowUIPanel(boardTransform); };
+        NetworkManager.Singleton.OnClientConnectedCallback += CheckForSessionStarted;
 
-        foreach (var button in buttons)
-        {
-            button.onClick.AddListener((() => { ShowUIPanel(boardTransform); }));
-        }
+        NetworkManager.Singleton.OnClientDisconnectCallback += (ulong u) => { OnPlayerDisconnected(); };
     }
 
     private void ShowUIPanel(UIPanel newPanel)
@@ -47,5 +44,35 @@ public class UIManager : MonoBehaviour
         currentPanel.Transform.DOAnchorPos(currentPanel.OutPosition, transitionTime);
         newPanel.Transform.DOAnchorPos(Vector2.zero, transitionTime).SetDelay(transitionTime);
         currentPanel = newPanel;
+    }
+
+    public void ShowNetworkPanel()
+    {
+        ShowUIPanel(networkPanel);
+    }
+
+    public void ShowStartPanel()
+    {
+        ShowUIPanel(startPanel);
+    }
+
+    public void ShowGamePanel()
+    {
+        ShowUIPanel(boardTransform);
+    }
+
+    public void OnPlayerDisconnected()
+    {
+        ShowNetworkPanel();
+        GameManager.Instance.RestartGame();
+    }
+
+    private void CheckForSessionStarted(ulong numberUlong)
+    {
+        Debug.Log("ClientConnected");
+        if (NetworkManager.Singleton.ConnectedClients.Count >= 2)
+        {
+            ShowGamePanel();
+        }
     }
 }

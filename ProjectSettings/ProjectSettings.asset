@@ -889,11 +889,11 @@ PlayerSettings:
     m_VersionName: 
   apiCompatibilityLevel: 6
   activeInputHandler: 0
-  cloudProjectId: 
+  cloudProjectId: 1fc20232-e510-4d6b-8db3-bfe382c0b5a5
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: TicTacToe
+  organizationId: juandavidcortesossa
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   playerDataPath: 

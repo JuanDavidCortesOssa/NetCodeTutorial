@@ -43,7 +43,7 @@ public class WinPanel : NetworkBehaviour
 
     private void RestartGame()
     {
-        GameManager.Instance.RestartGame();
+        // GameManager.Instance.RestartGame();
 
         if (IsServer)
         {
@@ -53,6 +53,8 @@ public class WinPanel : NetworkBehaviour
         {
             RestartGameServerRpc();
         }
+
+        UIManager.Instance.ShowGamePanel();
     }
 
     [ServerRpc(RequireOwnership = false)]
