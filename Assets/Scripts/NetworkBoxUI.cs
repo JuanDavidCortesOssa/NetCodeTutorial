@@ -12,25 +12,15 @@ public class NetworkBoxUI : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI boxText;
     private bool isBeingCheck = false;
 
-    private NetworkVariable<FixedString32Bytes> _boxTextNetworkVariable =
-        new NetworkVariable<FixedString32Bytes>("", NetworkVariableReadPermission.Everyone,
-            NetworkVariableWritePermission.Owner);
-
     public override void OnNetworkSpawn()
     {
         GameManager.Instance.OnGameRestart += ResetText;
         boxButton.onClick.AddListener(UpdateBoxTextNetworkVariable);
-        _boxTextNetworkVariable.OnValueChanged += (value, newValue) =>
-        {
-            boxText.text = newValue.Value;
-            UpdatePlayerTurnState();
-            GameManager.Instance.CheckGameEnd();
-            isBeingCheck = false;
-        };
     }
 
     private void UpdateBoxTextNetworkVariable()
     {
+        Debug.Log("BoxText: " + boxText.text);
         if (boxText.text != "") return;
         if (isBeingCheck) return;
 
@@ -39,10 +29,12 @@ public class NetworkBoxUI : NetworkBehaviour
 
         if (IsServer && playerTurn.Equals(TurnManager.PlayerTurn.Server))
         {
-            ChangeBoxTextNetworkVariable("X");
+            ChangeBoxText("X");
+            ChangeBoxTextClientRpc("X");
         }
         else if (IsClient && !IsServer && playerTurn.Equals(TurnManager.PlayerTurn.Client))
         {
+            ChangeBoxText("O");
             ChangeBoxTextServerRpc("O");
         }
     }
@@ -60,15 +52,24 @@ public class NetworkBoxUI : NetworkBehaviour
         }
     }
 
-    private void ChangeBoxTextNetworkVariable(string value)
+    private void ChangeBoxText(string text)
     {
-        _boxTextNetworkVariable.Value = value;
+        boxText.SetText(text);
+        UpdatePlayerTurnState();
+        GameManager.Instance.CheckGameEnd();
+        isBeingCheck = false;
+    }
+
+    [ClientRpc]
+    private void ChangeBoxTextClientRpc(string text)
+    {
+        ChangeBoxText(text);
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void ChangeBoxTextServerRpc(string text)
     {
-        ChangeBoxTextNetworkVariable(text);
+        ChangeBoxText(text);
     }
 
     private void ResetText()
