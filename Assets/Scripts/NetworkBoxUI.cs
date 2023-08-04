@@ -37,6 +37,8 @@ public class NetworkBoxUI : NetworkBehaviour
             ChangeBoxText("O");
             ChangeBoxTextServerRpc("O");
         }
+
+        isBeingCheck = false;
     }
 
     private void UpdatePlayerTurnState()
@@ -57,7 +59,6 @@ public class NetworkBoxUI : NetworkBehaviour
         boxText.SetText(text);
         UpdatePlayerTurnState();
         GameManager.Instance.CheckGameEnd();
-        isBeingCheck = false;
     }
 
     [ClientRpc]
