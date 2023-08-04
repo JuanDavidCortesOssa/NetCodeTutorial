@@ -59,6 +59,7 @@ public class GameManager : Singleton<GameManager>
             {
                 if (cellState.text == "")
                 {
+                    Debug.Log("Is Not Draw" + cellState.GetComponentInParent<Transform>().name);
                     isDraw = false;
                     break;
                 }
@@ -77,5 +78,6 @@ public class GameManager : Singleton<GameManager>
     {
         Debug.Log("Restarting game");
         OnGameRestart?.Invoke();
+        gameEnded = false;
     }
 }
